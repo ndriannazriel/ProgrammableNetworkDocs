@@ -59,6 +59,7 @@ def check(spec):
     problems = []
     checked = {}  #(key, address)= name of the first host that used it
 
+
     for host in spec["hosts"]:
         for key in ("ip", "ipv6"):
             if key not in host:
@@ -74,6 +75,19 @@ def check(spec):
                 )
             else:
                 checked[(key, address)] = host["name"]
+
+    #second check: every link must name a switch or host that exists. A link to s9 when there's no s9
+    names = []
+    for switch in spec["switches"]:
+        names.append(switch)
+    for host in spec["hosts"]:
+        names.append(host["name"])
+
+    for link in spec["links"]:
+        for node in link:
+            if node not in names:
+                problems.append(f"link {link}=>{node} is not a switch or a host.")
+
     return problems
 
 

@@ -1,0 +1,4 @@
+PROBLEM: 10.99.0.2 is used by both h2 and h4
+PROBLEM: fd00:2299::2 is used by both h2 and h4
+PROBLEM: link ['s3', 's9']=>s9 is not a switch or a host.
+Fix the description and try again.
