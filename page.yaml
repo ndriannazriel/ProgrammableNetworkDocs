@@ -8,22 +8,22 @@ repository: https://github.com/ndriannazriel/ProgrammableNetworkDocs
 answers:
   planes:
     question: "Where are the data, control and management planes in your network?"
-    answer: ""
+    answer: "For the data plane, the switches forward the frames by destination MAC address to the hosts. There is no control plane because all hosts share the same subnet so nothing is routed between networks and no routing decisions need to be made. For the switches, they learn on its own without a controller. The management plane can be seen from the topology.yaml and build_topo.py file which helps configure the network and maintain the network easier by creating a description(the hosts, links and addresses) into a running network."
   learning:
     question: "How did your switches learn which port leads to each host? Use your MAC table evidence."
-    answer: ""
+    answer: "The switch takes note each frame's source MAC and the port it arrived on and each of that MAC maps to a port. From macs.txt, we can see that for example port 1 with is local=no ,the switch learned the host MAC and saves it on that port for future forwarding now that it knows where to forward the frame through what port. If the switch does not yet know where a destination MAC is, it floods the frame out of all other ports and learns from the replies. On Port 3, there are multiple MACs because they all sit behind s2."
   kind:
     question: "Which of the four kinds of programmability is this assignment (a network described as data, then built and documented by scripts)? Why isn't it any of the other three?"
-    answer: ""
+    answer: "Automated configuration management. This is because the topology.yaml acts as the single source of truth for the entire network. There is also the check() function that detects any problem before anything is built. then the build_topo.py file builds the running network based on the description in the file. Git serves as the version control. It isnt Programmable data plane because there is no change for how packets are processed. Its not externalised control plane because there's no controller and its not programmatic device interface because there's no API involved."
   two_am:
     question: "Week 1's 2 a.m. change on 40 switches: what would be different if those switches were described like your network?"
-    answer: ""
+    answer: "Since the topology.yaml is acting as the single source of truth, changing a value in that file would be the same as applying the change to all 40 switches when the build_topo.py runs. The make topology script also catches any error within that network. This saves both time and effort. Also with the help of Git, it lets you see what exactly was changed. If needed, a revert is possible to the last good version."
   model:
     question: "What's the difference between your network's data model and its serialisation? Use YAML and JSON as the example."
-    answer: ""
+    answer: "Both the yaml and json file are the using the same data model. YAML uses indentation and dashes, supports comments, and needs few quotes while JSON uses braces, brackets and quoted keys, and has no comments. Since topology.yaml was converted to topology.json, some of the comments was lost in the conversion but because the model stayed the same, the format did not change the network."
   check:
     question: "Why is it better to catch bad data in check() than with pingall? What did IPv6 notice about a duplicate address that IPv4 didn't?"
-    answer: ""
+    answer: "Its better to catch bad data with a function such as check() because it allows network programmers to catch a problem before the network is running. A simple pingall command would just give me guesses on what could've happened if a packet is loss in transmission. From dad.txt, we can see that before an Ipv6 host uses a new address, Duplicate Address Detection detects if the address has already been used within the network. inet6 fd00:2299::1/64 scope global dadfailed tentative => h1 alraedy used this address so h2 marked its copy dadfailed and refused to use it. inet 10.99.0.1/24 scope global secondary => No check is done on Ipv4 making h2 accept the address without any warning."
   git:
     question: "What does your Git history give you that copying files into folders named topology-v2-final wouldn't?"
-    answer: ""
+    answer: "Git diff specifically shows what line in the file has been changed. What has been deleted, what was added and what was modified. Having this allows for much better version control."
