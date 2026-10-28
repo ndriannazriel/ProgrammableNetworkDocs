@@ -1,0 +1,11 @@
+traceroute to 10.99.32.10 (10.99.32.10), 8 hops max, 60 byte packets
+ 1  10.99.1.1  0.121 ms  0.009 ms  0.007 ms
+ 2  10.99.13.2  0.020 ms  0.010 ms  0.010 ms
+ 3  10.99.1.1  0.011 ms  0.009 ms  0.010 ms
+ 4  10.99.13.2  0.011 ms  0.012 ms  0.011 ms
+ 5  10.99.1.1  0.021 ms  0.011 ms  0.010 ms
+ 6  10.99.13.2  0.014 ms  0.016 ms  0.014 ms
+ 7  10.99.1.1  0.014 ms  0.014 ms  0.014 ms
+ 8  10.99.13.2  0.017 ms  0.017 ms  0.017 ms
+
+A loop happens because the same interface is used for the next hop in r3

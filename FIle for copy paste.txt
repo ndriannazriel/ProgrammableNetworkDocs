@@ -1,0 +1,36 @@
+r1 ip route add 10.99.32.0/24 via 10.99.12.2
+r1 ip route add 10.99.32.0/20 via 10.99.13.2
+r3 ip route add 10.99.32.0/20 via 10.99.23.2
+r3 ip route add 10.99.1.0/24 via 10.99.13.1
+r2 ip route add 10.99.1.0/24 via 10.99.12.1
+
+
+Step 5
+r1 ip route get 10.99.32.10
+r1 ip route get 10.99.33.10
+r1 ip route get 10.99.40.1
+
+r1 ip route del 10.99.32.0/24
+h1 traceroute -n -I 10.99.32.10 > week3/trace-h2-fallback.txt
+sh cat week3/trace-h2-fallback.txt
+
+
+Trace loop note:
+the loop happened cause the same ip of the next hop is used for the next hop in r3
+
+r1 sysctl -w net.ipv6.conf.all.forwarding=1
+r2 sysctl -w net.ipv6.conf.all.forwarding=1
+r3 sysctl -w net.ipv6.conf.all.forwarding=1
+r1 ip -6 route add fd00:2299:32::/64 via fd00:2299:12::2
+r1 ip -6 route add fd00:2299:30::/44 via fd00:2299:13::2
+r3 ip -6 route add fd00:2299:30::/44 via fd00:2299:23::2
+r3 ip -6 route add fd00:2299:1::/64 via fd00:2299:13::1
+r2 ip -6 route add fd00:2299:1::/64 via fd00:2299:12::1
+h1 ping -6 -c 3 fd00:2299:32::10
+h1 ping -6 -c 3 fd00:2299:33::10
+
+r1 ip -6 route get fd00:2299:32::10 > week3/lpm-ipv6.txt
+r1 ip -6 route get fd00:2299:33::10 >> week3/lpm-ipv6.txt
+r1 ip -6 route get fd00:2299:3f::1 >> week3/lpm-ipv6.txt
+h1 traceroute -6 -n -I fd00:2299:33::10 > week3/trace-h3-ipv6.txt
+sh cat week3/lpm-ipv6.txt week3/trace-h3-ipv6.txt
