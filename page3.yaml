@@ -7,13 +7,13 @@ repository: https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
 answers:
   design:
     question: "Describe your design: why these routers, LANs and links, and how you chose the addresses."
-    answer: ""
+    answer: "I chose the a similar design from the lab but the LANs are a bit different in which I used easy to remember network address such as .1,.2,.3 and 4 for each of the LANs. So because of that, the static routes also had to be modified a bit but generally alsmot the same design as the lab but made easier for reading."
   summary:
     question: "Which route summarises several LANs? Which networks does it cover, why is it correct, and what else would it attract if you added a network inside its range?"
-    answer: ""
+    answer: "Router R1's route to 10.99.2.0/23 via 10.99.12.2. With a /23 subnet mask, for the third octet, the value caan only be 2 and 3. Thus, covering both LAN 2 and LAN 3. From the evidence/summary.txt, both hosts go via the same next hop and that is correct. For my design, since /23 covers 10.99.2.0 to 10.99.3.255, there's no spare space for a new network. But suppose h3s LAN were moved so it sat behind r4 instead of r3. r1 would still match 10.99.3.x against the /23 and send it towards r2, which is the wrong direction. The traffic would take a long detour or be lost."
   failure:
     question: "When you took a link down, what happened, and why couldn't your routes recover even though another path existed? What would have recovered?"
-    answer: ""
+    answer: "Using the evidence from failure.txt, eventhough there is another path, that does not neccesarily mean it can be routed through. Static routes are fixed instructions. With r1-eth2 down, the route had nowhere to go, so r1 had no route to 10.99.4.0/24 at all. A backup route would be a good recovery as well as a routing protocol that automatically learns about route changes that happen."
   control_plane:
     question: "In your network, what was the control plane? Who worked out the routes, and what does that mean for a network of 40 routers?"
-    answer: ""
+    answer: "The routing table is what the routers data plane uses to forward. Nothing on the routers worked out the routes. It was loaded from the YAML file. So the control plane here was me and my files and with 40 routers, it would become a tremendous hassle to work every route by hand and if a failure happens such as a link fail, nothing is recovered automatically."

@@ -65,7 +65,27 @@ def routing_tables_section(spec):
         <tr><td>10.7.12.0/30</td><td>directly connected</td></tr> ...</table>
     Use esc() on every value.
     """
-    return "<p>TODO: show each router's routing table.</p>"
+    output = ""
+    for router in spec["routers"]:
+        # Collect every entry as a pair: (network, where it goes).
+        entries = []
+        for interface in plan(spec)[router]:
+            entries.append((interface.network, "directly connected"))
+        for route in (spec.get("routes") or {}).get(router) or []:
+            entries.append((ipaddress.ip_network(route["to"]), f"via {route['via']}"))
+
+        # Longest prefix first (/30 before /24 before /23), the order longest-prefix match prefers.
+        # The minus sign flips the order, so the biggest prefix length comes first.
+        entries.sort(key=lambda entry: (-entry[0].prefixlen, entry[0]))
+
+        rows = ""
+        for network, where in entries:
+            rows += f"<tr><td><code>{esc(network)}</code></td><td>{esc(where)}</td></tr>"
+        output += (
+            f"<h3>{esc(router)}</h3>"
+            f"<table><thead><tr><th>Destination</th><th>Next hop</th></tr></thead><tbody>{rows}</tbody></table>"
+        )
+    return output
 
 
 def mermaid_diagram(spec):

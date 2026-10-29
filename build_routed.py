@@ -31,7 +31,7 @@ def plan(spec):
     """Every node's addresses, worked out from the LANs and links: {node: [IPv4 interface, ...]}."""
     out = {r: [] for r in spec["routers"]}
     for lan in spec["lans"]:
-        net = ipaddress.ip_network(lan["network"])
+        net = ipaddress.ip_network(lan["network"]) ##Turns the text "10.99.1.0/2" into a network object.
         out[lan["router"]].append(ipaddress.ip_interface(f"{net.network_address + 1}/{net.prefixlen}"))
         out[lan["host"]] = [ipaddress.ip_interface(f"{net.network_address + 10}/{net.prefixlen}")]
     for a, b, network in spec["links"]:
@@ -151,7 +151,37 @@ def check_paths(spec):
     find hosts, routers and next hops changes.
     """
     problems = []
-    # TODO: your code here
+    all_hosts = hosts(spec)  # {"h1": (address, router), "h2": (address, router), ...}
+
+    # Try every source host with every destination host.
+    for src in all_hosts:
+        for dst in all_hosts:
+            if src == dst:
+                continue  # a host doesn't need a route to itself
+
+            # Where the packet is going, and the first router it meets(host own network router)
+            destination = all_hosts[dst][0]
+            router = all_hosts[src][1]
+
+            visited = []  # the routers this packet has been through so far
+            while True:
+                # Seen this router already? Then the packet is going round in circles.
+                if router in visited:
+                    path = " -> ".join(visited + [router])
+                    problems.append(f"{src} to {dst}: loop {path}")
+                    break
+                visited.append(router)
+
+                # Ask the router what it would do with this packet.
+                action, next_hop = lookup(spec, router, destination)
+
+                if action == "connected":
+                    break  # the destination is on this router's own LAN: delivered
+                if action == "none":
+                    problems.append(f"{src} to {dst}: {router} has no route to {destination}")
+                    break
+                # Otherwise the router passes it on: move to the router that owns the next hop.
+                router = owner(spec, next_hop)
     return problems
 
 
